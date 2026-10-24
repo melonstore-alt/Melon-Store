@@ -1,0 +1,124 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Melon Store | Online Shopping Pakistan</title>
+<style>
+:root{--green:#145c42;--light:#f3f7f3;--pink:#e83e79}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;color:#203129;background:#fff}
+header{background:var(--green);color:white;padding:20px 6%;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+header h1{margin:0;font-size:25px}
+button{border:0;border-radius:8px;padding:11px 15px;cursor:pointer;font-weight:bold}
+.cart{background:#fff;color:var(--green)}
+.hero{background:var(--light);padding:45px 6%;text-align:center}
+.hero h2{font-size:clamp(28px,5vw,44px);margin:0 0 12px}
+.hero p{color:#52655b}
+main{padding:28px 6%}
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px}
+.card{border:1px solid #e5eae6;border-radius:14px;padding:14px}
+.pic{height:140px;display:grid;place-items:center;background:var(--light);border-radius:10px;font-size:65px}
+.card h3{margin-bottom:7px}
+.price{color:var(--green);font-weight:bold;font-size:20px}
+.add,.checkout{background:var(--green);color:white;width:100%;margin-top:10px}
+section{margin-bottom:30px}
+#cartPanel{padding:20px;background:#f3f7f3;border-radius:12px;margin-top:25px}
+input{padding:12px;width:100%;margin:6px 0 12px;border:1px solid #ccd6cf;border-radius:7px}
+footer{text-align:center;padding:25px;background:#163d30;color:white}
+.small{font-size:13px;color:#66756c}
+</style>
+</head>
+<body>
+<header>
+  <h1>🍈 Melon Store</h1>
+  <button class="cart" onclick="showCart()">🛒 Cart (<span id="count">0</span>)</button>
+</header>
+
+<div class="hero">
+  <h2>Welcome to Melon Store</h2>
+  <p>Shop your favourites. Simple shopping, delivered in Pakistan.</p>
+  <button class="checkout" style="max-width:190px" onclick="document.querySelector('#shop').scrollIntoView({behavior:'smooth'})">Shop Now</button>
+</div>
+
+<main>
+<section id="shop">
+  <h2>Our Products</h2>
+  <p class="small">Demo products — replace these with your real items and prices.</p>
+  <div class="products" id="products"></div>
+</section>
+
+<section id="cartPanel">
+  <h2>Your Shopping Cart</h2>
+  <div id="items">Your cart is empty.</div>
+  <h3>Total: Rs. <span id="total">0</span></h3>
+  <h2>Checkout</h2>
+  <form id="orderForm">
+    <label>Full Name</label>
+    <input id="customer" required placeholder="Your full name">
+    <label>Phone Number</label>
+    <input id="phone" required type="tel" placeholder="03XXXXXXXXX">
+    <label>Delivery Address</label>
+    <input id="address" required placeholder="House, street, city">
+    <p><b>Payment method: JazzCash</b></p>
+    <p class="small">Online payment is not activated yet. Do not send money until official payment instructions are configured.</p>
+    <button class="checkout" type="submit">Continue Order</button>
+  </form>
+  <p id="message" role="status"></p>
+</section>
+</main>
+
+<footer>© 2026 Melon Store · Online Shopping Pakistan</footer>
+
+<script>
+const products = [
+ {id:1,name:"Everyday T-Shirt",price:1200,emoji:"👕"},
+ {id:2,name:"Smart Watch",price:2500,emoji:"⌚"},
+ {id:3,name:"Wireless Headphones",price:1800,emoji:"🎧"},
+ {id:4,name:"Casual Shoes",price:3200,emoji:"👟"},
+ {id:5,name:"Backpack",price:2100,emoji:"🎒"},
+ {id:6,name:"Sunglasses",price:900,emoji:"🕶️"}
+];
+let cart = {};
+function money(n){return n.toLocaleString("en-PK")}
+function renderProducts(){
+ document.getElementById("products").innerHTML=products.map(p=>`
+ <article class="card">
+ <div class="pic">${p.emoji}</div>
+ <h3>${p.name}</h3>
+ <div class="price">Rs. ${money(p.price)}</div>
+ <button class="add" onclick="add(${p.id})">Add to Cart</button>
+ </article>`).join("");
+}
+function add(id){cart[id]=(cart[id]||0)+1;renderCart()}
+function change(id,amount){
+ cart[id]=(cart[id]||0)+amount;
+ if(cart[id]<=0)delete cart[id];
+ renderCart();
+}
+function renderCart(){
+ let entries=Object.entries(cart);
+ document.getElementById("count").textContent=
+ entries.reduce((s,[id,q])=>s+q,0);
+ document.getElementById("items").innerHTML=entries.length?entries.map(([id,q])=>{
+ let p=products.find(x=>x.id===Number(id));
+ return `<p>${p.name} — Rs. ${money(p.price*q)}
+ <button onclick="change(${p.id},-1)">−</button>
+ ${q}
+ <button onclick="change(${p.id},1)">+</button></p>`;
+ }).join(""):"Your cart is empty.";
+ document.getElementById("total").textContent=
+ money(entries.reduce((s,[id,q])=>s+products.find(p=>p.id===Number(id)).price*q,0));
+}
+function showCart(){document.getElementById("cartPanel").scrollIntoView({behavior:"smooth"})}
+document.getElementById("orderForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ if(!Object.keys(cart).length){alert("Please add a product to your cart.");return}
+ document.getElementById("message").textContent=
+ "Your order details are ready, but no order has been sent or payment taken. Connect a secure order backend and official JazzCash gateway before accepting real orders.";
+});
+renderProducts();renderCart();
+</script>
+</body>
+</html>
